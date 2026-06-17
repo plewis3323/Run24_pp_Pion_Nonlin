@@ -1,0 +1,1588 @@
+\documentclass[11pt]{article}
+
+% ============================================================
+%  Full faithful rewrite of sPHENIX analysis note PPG-12
+%  "Measurement of isolated-prompt photons in p+p collisions
+%   at sqrt(s) = 200 GeV with the sPHENIX detector"
+%  Internal tag: sPH-ppg-2024-012 (v4)
+% ============================================================
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\usepackage{enumitem}
+
+\newcommand{\ET}{E_{\mathrm{T}}}
+\newcommand{\ETg}{E_{\mathrm{T}}^{\gamma}}
+\newcommand{\Eiso}{E_{\mathrm{iso}}}
+\newcommand{\pt}{p_{\mathrm{T}}}
+\newcommand{\sqrts}{\sqrt{s}}
+\newcommand{\dr}{\Delta R}
+
+\title{\textbf{Measurement of Isolated-Prompt Photons in $p+p$ Collisions
+at $\sqrts = 200$~GeV with the sPHENIX Detector}\\[4pt]
+\large A Faithful, Reader-Friendly Rewrite of the Analysis Note}
+\author{Original authors: Yeonju Go, Shuhang Li, Blair Seidlitz,\\
+Justin Bennett, Muhammad Elsayed\\[4pt]
+\small Internal note tag: sPH-ppg-2024-012 (version 4)}
+\date{Original date: 15 May 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+This note presents the first measurement of the isolated-prompt-photon
+differential cross section in $p+p$ collisions at a center-of-mass energy
+$\sqrts = 200$~GeV recorded by the sPHENIX detector at RHIC during Run~2024.
+Photons are measured within a pseudorapidity acceptance $|\eta^{\gamma}| < 0.7$
+and a transverse-energy range $12 < \ETg < 32$~GeV. The isolation requirement
+is defined at truth (generator) level as a total isolation energy
+$\Eiso^{\mathrm{truth}} < 4$~GeV inside a cone of radius $\dr = 0.3$ around the
+photon. The measurement uses an integrated luminosity of
+$\mathcal{L} = 64.37~\mathrm{pb}^{-1}$. The cross section is corrected for
+background, detector efficiency and resolution (via iterative Bayesian
+unfolding) and compared to next-to-leading-order pQCD predictions from
+\textsc{jetphox} and to \textsc{pythia-8}. This rewrite preserves every section,
+table and numerical result of the original note while expanding the prose for a
+reader with a high-energy-physics graduate background.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+The production of prompt photons in hadronic collisions is a classic probe of
+perturbative quantum chromodynamics (pQCD) and of the parton structure of the
+proton. Unlike hadrons, a prompt photon emerges directly from the hard
+scattering and does not fragment or hadronize; it therefore carries clean
+kinematic information about the underlying partonic process. ``Prompt''
+photons are conventionally separated into two contributions:
+
+\begin{itemize}
+  \item \textbf{Direct photons}, produced in the hard $2\to2$ scattering
+        itself. At RHIC energies the two dominant subprocesses are
+        \emph{quark--gluon Compton scattering} $q g \to q \gamma$ and
+        \emph{quark--antiquark annihilation} $q\bar q \to g\gamma$. The Compton
+        channel involves a gluon in the initial state and therefore makes the
+        cross section directly sensitive to the gluon parton distribution
+        function (PDF) of the proton.
+  \item \textbf{Fragmentation photons}, radiated collinearly from a final-state
+        quark or gluon. These are described by photon fragmentation functions
+        and are suppressed by requiring the photon to be \emph{isolated}.
+\end{itemize}
+
+\noindent
+The original note's Fig.~1 shows the representative leading-order Feynman
+diagrams for these processes: the Compton diagram ($qg\to q\gamma$), the
+annihilation diagram ($q\bar q\to g\gamma$), and a fragmentation diagram in
+which a photon is emitted from a scattered parton.
+
+Because the Compton process dominates at RHIC, isolated-photon production probes
+the gluon density of the proton. The momentum fraction carried by the struck
+partons is approximately
+\begin{equation}
+  x \;\approx\; \frac{2\,\ETg}{\sqrts},
+\end{equation}
+so the kinematic range of this measurement, $12 < \ETg < 32$~GeV at
+$\sqrts = 200$~GeV, corresponds to $x \approx 0.1$--$0.3$. This is precisely the
+region where the gluon PDF is comparatively poorly constrained, making the
+measurement valuable as a future input to global PDF fits.
+
+\paragraph{Isolation.} An \emph{isolation} criterion is imposed to suppress the
+fragmentation contribution and the much larger background from neutral-meson
+decays (primarily $\pi^0 \to \gamma\gamma$ and $\eta\to\gamma\gamma$). One sums
+the energy in a cone of fixed radius around the photon, excluding the photon
+itself, and requires this isolation energy to be small. The original note's
+Figs.~2 and~3 illustrate, from simulation, how the fraction of photons passing
+the isolation cut evolves with $\ETg$ and how it differs between signal direct
+photons and the meson-decay background.
+
+\paragraph{Prior measurements.} The PHENIX experiment previously measured the
+isolated direct-photon cross section in $p+p$ at $\sqrts=200$~GeV
+(Phys.\ Rev.\ D \textbf{86}, 072008, Ref.~[1]). sPHENIX, with its hermetic
+electromagnetic and hadronic calorimetry, extends the reach to higher $\ETg$
+with substantially improved jet/photon energy resolution, and the present note
+constitutes the first such sPHENIX result.
+
+% ============================================================
+\section{Data and Monte Carlo Samples}
+% ============================================================
+
+\subsection{Data sample}
+
+The analysis uses $p+p$ collision data recorded by sPHENIX during the Run~2024
+(Run~24) data-taking period. The relevant run range, software production tag and
+calibration database (CDB) global tag are summarized in Table~\ref{tab:data}.
+
+\begin{table}[h]
+\centering
+\caption{Data sample definition.}
+\label{tab:data}
+\begin{tabular}{ll}
+\toprule
+Quantity & Value \\
+\midrule
+Run range & 47289--53880 \\
+Analysis build & ana521 \\
+Calibration global tag (CDB) & 2025p007 \\
+DST datasets & DST\_FITTING, DST\_JETCALO \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Monte Carlo samples}
+
+Signal and background processes are generated with \textsc{pythia-8} (Detroit
+tune, version 8.307) and passed through a full \textsc{geant-4} simulation of the
+sPHENIX detector. To obtain statistics across the full $\ETg$ spectrum, samples
+are generated in separate hard-process bins: photon-triggered samples with
+parton-level thresholds of 5, 10 and 20~GeV, and QCD dijet samples with
+thresholds of 8, 12, 20, 30 (and 40)~GeV, each with $\mathcal{O}(10^7)$ events.
+
+Each generated sample carries an effective cross section that accounts for the
+generator-level acceptance of its hard-process selection,
+\begin{equation}
+  \sigma_{\mathrm{eff}} \;=\; \sigma_{\mathrm{gen}}\,
+  \frac{N_{\mathrm{acc}}}{N_{\mathrm{gen}}},
+\end{equation}
+where $\sigma_{\mathrm{gen}}$ is the generated process cross section,
+$N_{\mathrm{gen}}$ the number of generated events and $N_{\mathrm{acc}}$ the
+number accepted into the sample. The effective cross sections are listed in
+Table~\ref{tab:sigeff}.
+
+\begin{table}[h]
+\centering
+\caption{Effective cross sections $\sigma_{\mathrm{eff}}$ [pb] of the MC samples
+(MDC2 single-interaction / double-interaction productions).}
+\label{tab:sigeff}
+\begin{tabular}{lr}
+\toprule
+Sample & $\sigma_{\mathrm{eff}}$ [pb] \\
+\midrule
+jet 8  & $4.93\times10^{6}$ \\
+jet 12 & $1.49\times10^{6}$ \\
+jet 20 & $6.26\times10^{4}$ \\
+jet 30 & $2.53\times10^{3}$ \\
+photon 5  & $1.46\times10^{5}$ \\
+photon 10 & $6.94\times10^{3}$ \\
+photon 20 & $1.30\times10^{2}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+To avoid double-counting when stitching the threshold-binned samples together,
+each sample is restricted to a truth $\pt$ window (the photon or leading-jet
+truth $\pt$), given in Table~\ref{tab:ptwin}.
+
+\begin{table}[h]
+\centering
+\caption{Truth $\pt$ windows used to stitch the threshold-binned MC samples.}
+\label{tab:ptwin}
+\begin{tabular}{ll}
+\toprule
+Sample & Truth $\pt$ window [GeV] \\
+\midrule
+photon 5  & $[0,14)$ \\
+photon 10 & $[14,22)$ \\
+photon 20 & $[22,\infty)$ \\
+jet 8  & $[9,14)$ \\
+jet 12 & $[14,21)$ \\
+jet 20 & $[21,32)$ \\
+jet 30 & $[32,42)$ \\
+jet 40 & $[42,\infty)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Beam crossing angle and double interactions}
+
+The Run~24 data were taken under two distinct beam configurations distinguished
+by the crossing angle, which strongly affects the longitudinal width of the
+luminous region and hence the rate of double (pileup) interactions:
+
+\begin{itemize}
+  \item \textbf{0~mrad crossing angle}: runs 47289--51274,
+        $\mathcal{L}\approx 47~\mathrm{pb}^{-1}$, $\sigma_z\approx 54$~cm,
+        with a double-interaction (DI) fraction of about 22\% (precisely
+        22.4\%).
+  \item \textbf{1.5~mrad crossing angle}: runs 51274--54000,
+        $\mathcal{L}\approx 17~\mathrm{pb}^{-1}$, $\sigma_z\approx 22$~cm,
+        with a DI fraction of about 8\% (precisely 7.9\%).
+\end{itemize}
+
+\noindent
+Double interactions are modeled in MC by \emph{blending} single-interaction (SI)
+and double-interaction templates; this is described in detail in
+Sec.~\ref{sec:syst} and Appendix~17.
+
+\subsection{Trigger}
+
+The analysis relies on the EMCal photon (single-tower / cluster) trigger. A Level-1
+trigger update was deployed at run~47289; the nominal trigger is the
+\textbf{Photon 4~GeV} trigger (trigger bit~30). The per-event trigger efficiency
+is measured with a reference (minimum-bias) trigger using the ratio
+\begin{equation}
+  \varepsilon_{\mathrm{trig}}
+  = \frac{N(\text{scaled[10] \& live[}N_{\mathrm{bit}}\text{]})}
+         {N(\text{scaled[10]})},
+\end{equation}
+i.e.\ the fraction of minimum-bias-selected events that also fire the photon
+trigger bit. The efficiency turn-on as a function of $\ET$ is fit with a Gumbel
+function,
+\begin{equation}
+  \varepsilon_{\mathrm{trig}}(\ET) = p_0\,
+  \exp\!\left[-\exp\!\left(-\frac{\ET-\mu}{\beta}\right)\right],
+\end{equation}
+reaching a plateau efficiency of $0.9966$ in the measured $\ETg$ range.
+
+\subsection{Event selection and luminosity}
+
+Events are required to have a reconstructed minimum-bias-detector (MBD) vertex
+satisfying $|z_{\mathrm{MBD}}| < 60$~cm. The integrated luminosity for the
+analyzed sample is
+\begin{equation}
+  \mathcal{L} = 64.37^{\,+5.88}_{\,-4.34}~\mathrm{pb}^{-1}
+  \quad (+9.13\%/-6.75\%),
+\end{equation}
+determined from a van~der~Meer scan with an MBD reference cross section
+$\sigma_{\mathrm{MBD}} = 25.2^{+2.3}_{-1.7}$~mb (see Sec.~\ref{sec:results} and
+the PPG-10 luminosity note, Ref.~[10]).
+
+% ============================================================
+\section{Photon Reconstruction and Identification}
+% ============================================================
+
+\subsection{Calorimeters}
+
+The photon reconstruction relies on the sPHENIX electromagnetic calorimeter
+(EMCal) and on the inner and outer hadronic calorimeters (iHCal, oHCal). The
+EMCal is a SPACAL-type tungsten/scintillating-fiber sampling calorimeter with full
+$2\pi$ azimuthal coverage and pseudorapidity coverage $|\eta|<1.1$. It is
+segmented into towers of size $\Delta\eta\times\Delta\phi\approx0.024\times0.024$
+($96\times256$ towers in total) and provides a single-photon energy resolution of
+$\sigma_E/E\simeq16\%/\sqrt{E[\mathrm{GeV}]}\oplus5\%$ at test-beam energies. As
+noted in Sec.~\ref{sec:syst}, an additional smearing is applied to the EMCal
+energies in the MC for the nominal analysis to better match the in-situ
+resolution. The two HCal sections sit immediately behind the EMCal at increasing
+radius; they provide hadronic shower containment and an energy reading that enters
+the hadronic-leakage variable $R_{\mathrm{had}}$ and the cluster isolation. The
+collision vertex is reconstructed from the Minimum Bias Detector (MBD), two arrays
+of $64$ quartz-Cherenkov photomultipliers in the forward regions
+$3.51 < |\eta| < 4.61$.
+
+\subsection{Clustering algorithm}
+
+EMCal towers are aggregated into clusters by the
+\texttt{RawClusterBuilderTemplate} algorithm. Edge-adjacent towers above a single
+$70$~MeV threshold that pass the \texttt{isGood} tower-quality cuts are grouped
+together; clusters grow until no adjacent tower exceeds the threshold, after which
+a cluster-splitting algorithm separates overlapping showers. The cluster
+kinematics use the tower positions in $x$--$y$--$z$ space with shower-depth
+corrections, and the resulting position is converted to $\eta$ and $\phi$ relative
+to the MBD-reconstructed collision vertex; the cluster energy is the scalar sum of
+the constituent tower energies. The dependence of the cluster $\eta$ on the vertex
+$z$ position is the mechanism by which the double-interaction vertex shift
+(Appendix~\ref{app:di}) distorts the reconstructed shower shapes.
+
+\subsection{Photon energy response}
+
+The energy scale and resolution are estimated from MC. The ratio of reconstructed
+cluster $\ET$ to truth photon $\ET^{\mathrm{truth}}$ is studied as a function of
+$\ET^{\mathrm{truth}}$ and fit with a Gaussian in each truth-energy bin (original
+note's Figs.~8--10). To isolate the intrinsic detector resolution from
+vertex-induced distortions, this study restricts the vertex to $|z_{\mathrm{vtx}}|<30$~cm;
+the wider analysis fiducial $|z_{\mathrm{vtx}}|<60$~cm is restored in the unfolding
+response matrix and the efficiency calculation. The fitted mean is close to unity
+($\mu\approx0.99$) and the fractional resolution $\sigma$ improves from about
+$0.071$ at $8$--$10$~GeV to about $0.051$ at $36$--$45$~GeV. A low-side tail
+reflects residual position-dependent calibration and is absorbed into the
+unfolding response matrix rather than corrected separately. The
+signal-to-background ratio of the reconstructed sample rises from $\sim15\%$ near
+$10$~GeV to $\sim50\%$ near $30$~GeV, which is the underlying reason the extracted
+purity (Sec.~\ref{sec:analysis}) improves so strongly with $\ETg$.
+
+\subsection{Shower-shape variables}
+
+A set of EMCal shower-shape observables is used to distinguish single photons
+from the broader and more irregular showers produced by merged
+$\pi^0\to\gamma\gamma$ decays and by hadronic background. These variables are
+summarized in Table~\ref{tab:showershape}.
+
+\begin{table}[h]
+\centering
+\caption{Shower-shape variables used in photon identification.}
+\label{tab:showershape}
+\begin{tabular}{ll}
+\toprule
+Variable & Description \\
+\midrule
+$E_{3\times2}/E_{3\times5}$ & ratio of energy in $3\times2$ to $3\times5$ tower windows \\
+$E_{1\times1}/E$            & central-tower energy fraction \\
+$w_{\mathrm{COGX}\,\eta}$   & shower width (center-of-gravity) in $\eta$ \\
+$w_{\mathrm{COGX}\,\phi}$   & shower width (center-of-gravity) in $\phi$ \\
+$w_{72}$                    & 7$\times$2 lateral width \\
+$R_{\mathrm{had}}$          & hadronic-leakage ratio (HCal behind cluster) \\
+$E_1$--$E_4$                & ring energies around the cluster core \\
+$E_{t1}$--$E_{t4}$          & corresponding transverse ring energies \\
+BDT                         & combined boosted-decision-tree discriminant \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Non-physics-background (NPB) rejection}
+
+A first XGBoost boosted-decision-tree (BDT) discriminant removes
+\emph{non-physics background} (NPB): out-of-time energy depositions, noise and
+beam-induced backgrounds. The NPB BDT uses 25 input features and is trained
+using the cluster timing as a label: clusters with
+$t_{\mathrm{cluster}} - t_{\mathrm{MBD}} < -7$~ns are tagged as NPB. Training and
+evaluation use $6 < \ET < 40$~GeV and $|\eta| < 0.7$. The nominal working point
+is $\mathrm{NPB} > 0.5$, which gives roughly $99\%$ purity at roughly $99\%$
+signal retention; the cut is varied to $0.3$ and $0.7$ for systematics.
+
+\subsection{Preselection and photon-ID BDT}
+
+After NPB rejection, photons pass a loose \emph{preselection} and are then
+classified by a dedicated photon-ID BDT. The preselection and the
+tight/non-tight BDT working-point definitions are given in
+Table~\ref{tab:presel}. The non-tight selection is used as the control sample in
+the data-driven purity (ABCD) method (Sec.~\ref{sec:analysis}).
+
+\begin{table}[h]
+\centering
+\caption{Preselection requirements and tight / non-tight photon-ID working
+points. The tight and non-tight thresholds are linear in $\ETg$.}
+\label{tab:presel}
+\begin{tabular}{ll}
+\toprule
+Selection & Requirement \\
+\midrule
+\multicolumn{2}{l}{\textit{Preselection}}\\
+\quad central fraction & $E_{1\times1}/E_{3\times3} < 0.98$ \\
+\quad ring 1 transverse & $0.6 < e_{t1} < 1.0$ \\
+\quad window ratio & $0.8 < E_{3\times2}/E_{3\times5} < 1.0$ \\
+\quad NPB BDT & $\mathrm{NPB} > 0.5$ \\
+\midrule
+\multicolumn{2}{l}{\textit{Tight}}\\
+\quad photon-ID BDT & $\mathrm{BDT} > 0.8156 - 0.00156\,\ETg$ \\
+\midrule
+\multicolumn{2}{l}{\textit{Non-tight}}\\
+\quad photon-ID BDT & $0.7333 - 0.01333\,\ETg < \mathrm{BDT} < 0.6844 + 0.00156\,\ETg$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The photon-ID BDT (Table~\ref{tab:idbdt}) uses 11 input features and consists of
+approximately 750 trees of depth~5.
+
+\begin{table}[h]
+\centering
+\caption{Input features of the photon-ID BDT (11 features).}
+\label{tab:idbdt}
+\begin{tabular}{ll}
+\toprule
+\# & Feature \\
+\midrule
+1  & $\ET$ \\
+2  & $w_{\mathrm{COGX}\,\eta}$ \\
+3  & $w_{\mathrm{COGX}\,\phi}$ \\
+4  & $z_{\mathrm{vtx}}$ \\
+5  & $\eta$ \\
+6  & $E_{1\times1}/E_{3\times3}$ \\
+7--10 & $E_{t1}$--$E_{t4}$ \\
+11 & $E_{3\times2}/E_{3\times5}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Isolation}
+
+Several isolation definitions were evaluated by their ROC area-under-curve
+(AUC); the best performer is a TopoCluster isolation in a cone of radius
+$R=0.4$, with AUC in the range $\sim0.82$--$0.88$. The nominal $80\%$-efficiency
+isolation working point is
+\begin{equation}
+  \Eiso < 0.490 + 0.0370\,E_{\mathrm{reco}}\;\mathrm{GeV},
+\end{equation}
+and the complementary non-isolated control region is
+\begin{equation}
+  \Eiso > 0.8 + 0.490 + 0.0370\,E_{\mathrm{reco}}\;\mathrm{GeV}.
+\end{equation}
+The isolation cone is referenced to the EMCal radius of $93.5$~cm.
+
+
+% ============================================================
+\section{Analysis Procedure}
+\label{sec:analysis}
+% ============================================================
+
+The measurement proceeds through an eight-step workflow: (1) event and photon
+selection; (2) NPB rejection; (3) photon-ID and isolation classification into
+ABCD regions; (4) data-driven purity extraction with signal-leakage correction;
+(5) MC closure of the purity method; (6) efficiency determination
+(reconstruction, ID, isolation, MBD-vertex); (7) iterative Bayesian unfolding;
+and (8) normalization to the differential cross section.
+
+\subsection{Truth isolation}
+
+At generator level a photon is defined as isolated if the total isolation energy
+inside a cone $\dr = 0.3$ around the photon satisfies
+$\Eiso^{\mathrm{truth}} < 4$~GeV. This truth definition is the reference to which
+the unfolded result is corrected, decoupling the published cross section from
+the detector-level reconstruction (TopoCluster $R=0.4$) isolation.
+
+\subsection{Data-driven purity: the double-sideband (ABCD) method}
+
+The signal purity is extracted with a two-dimensional double-sideband (``ABCD'')
+method using the photon-ID (tight/non-tight) and isolation (isolated/non-isolated)
+axes. The four regions are:
+\begin{itemize}[noitemsep]
+  \item \textbf{A}: tight \& isolated (signal region),
+  \item \textbf{B}: tight \& non-isolated,
+  \item \textbf{C}: non-tight \& isolated,
+  \item \textbf{D}: non-tight \& non-isolated.
+\end{itemize}
+Assuming the ID and isolation variables are uncorrelated for background, the
+background in region~A is estimated from the sidebands, giving the signal yield
+\begin{equation}
+  N_A^{\mathrm{sig}} = N_A - N_B\,\frac{N_C}{N_D}.
+\end{equation}
+A residual signal-leakage correction accounts for genuine signal photons leaking
+into the control regions (estimated from MC fractions $f_X^{\mathrm{MC}}$, with
+$X\in\{B,C,D\}$):
+\begin{equation}
+  N_A^{\mathrm{sig}} = \frac{N_A - N_B\,\dfrac{N_C}{N_D}}
+  {1 - \big(f_B - f_D\tfrac{N_C}{N_D}\big) - \dots},
+\end{equation}
+(schematically; the full leakage-corrected expression uses the MC signal
+fractions in each region). The purity is then
+\begin{equation}
+  P = \frac{N_A^{\mathrm{sig}}}{N_A}.
+\end{equation}
+
+The extracted purity rises strongly with $\ETg$:
+\begin{itemize}[noitemsep]
+  \item $P = 0.51 \pm 0.01$ at $10$--$12$~GeV,
+  \item $P = 0.72 \pm 0.04$ at $18$--$20$~GeV,
+  \item $P = 0.90 \pm 0.05$ above $26$~GeV.
+\end{itemize}
+
+\subsection{MC closure and isolation-template tuning}
+
+The ABCD procedure is validated by a closure test in MC, $C_{\mathrm{MC}}$, in
+which the method is applied to simulation and the recovered purity is compared to
+the true signal fraction. To make the simulated isolation distribution match
+data, the MC isolation energy is corrected with a linear ``fudge'' transformation
+\begin{equation}
+  \Eiso^{\mathrm{MC,corr}} = 1.2\,\Eiso^{\mathrm{MC}} + 0.1~\mathrm{GeV}.
+\end{equation}
+
+\subsection{Efficiencies}
+
+Four efficiency factors are evaluated from MC as functions of the truth photon
+$\ETg$ and applied bin-by-bin (together with the purity) to correct the measured
+yields. Truth photons are matched to reconstructed clusters using the
+track-ID-based association from the \texttt{CaloRawClusterEval} module, which
+assigns to each cluster the truth primary particle whose \textsc{geant} hits
+contribute the largest summed energy across the cluster's towers; a truth photon
+is matched when its track ID equals the cluster's stored leading-energy truth ID.
+The four factors are defined as follows.
+\begin{itemize}[noitemsep]
+  \item \textbf{Reconstruction efficiency}: the fraction of truth signal photons
+        matched to a reconstructed cluster.
+  \item \textbf{Identification efficiency}: the fraction of truth-matched signal
+        photons that also pass the preselection and the tight photon-ID, relative
+        to all truth-matched signal photons.
+  \item \textbf{Isolation efficiency}: the fraction of truth-matched signal
+        photons that also satisfy the isolation requirement, relative to all
+        truth-matched signal photons.
+  \item \textbf{MBD-vertex efficiency}: the fraction of truth-isolated signal
+        photon events in which the MBD north--south coincidence fires and a
+        reconstructed vertex is found within $|z_{\mathrm{reco}}|<60$~cm. The
+        denominator uses the all-$z$ truth fiducial, so this factor converts the
+        beam-delivered luminosity into events with a usable reconstructed vertex.
+\end{itemize}
+The reconstruction, ID and isolation efficiencies are each in the $0.7$--$0.9$
+range and vary slowly with $\ETg$; the MBD-vertex efficiency is the factor
+studied for channel independence in Appendix~\ref{app:mbd}. The efficiencies are
+applied after unfolding, on the truth-$\ETg$ grid.
+
+\subsection{Unfolding}
+
+The detector-level spectrum is corrected back to truth level with the D'Agostini
+iterative Bayesian method as implemented in RooUnfold~3.0.5. The iterative method
+is preferred over matrix inversion or SVD for two reasons: it converges rapidly
+when the response matrix is close to diagonal --- as it is here, given the
+$\sim5\%$ EMCal energy resolution --- and the regularization is set transparently
+by the iteration count, with each additional iteration trading residual bias
+against statistical noise. The fiducial binning of the reported result is
+\begin{equation}
+  [12,14,16,18,20,22,24,26,28,32]~\mathrm{GeV}.
+\end{equation}
+The response matrix is built on a wider grid that adds a $[10,12]$~GeV reco-side
+underflow and a $[32,36]$~GeV reco-side overflow, paired with truth bins
+$[8,10]$ (low underflow) and $[36,45]$~GeV (high overflow); these absorb migration
+in and out of the reported range and are not themselves reported.
+
+To make the MC $\ETg$ prior resemble data, the response matrix is reweighted by
+the ratio of a single-iteration D'Agostini unfold of the data spectrum (from a
+baseline run with the prior reweight disabled) to the un-reweighted MC truth
+prior, both normalized to unit area. The ratio is fit with an order-$[2/2]$
+Pad\'e approximant from $10$ to $35$~GeV (with the rational denominator's zeros
+constrained below the $[10,30]$~GeV clamp range), and the factor is applied
+photon-by-photon on the truth $\ETg$ when populating the response matrix in
+the next pipeline iteration. Because the energy resolution is small, the effect of
+unfolding on the spectrum is minor compared with the statistical uncertainties:
+the relative change between successive iterations drops below the per-bin
+statistical uncertainty after the first iteration, so the nominal result uses
+$N_{\mathrm{iter}}=2$, which keeps the iteration-dependent bias subdominant to
+other systematics. The ratio of post- to pre-unfolding yield is $2$--$10\%$ across
+the $\ETg$ range.
+
+Two closure tests validate the procedure. In the \emph{full} closure test the
+response matrix is built from the entire MC sample and the same events are
+unfolded, exactly reproducing the truth spectrum. In the \emph{half} closure test
+the matrix is built from half the sample and applied to the statistically
+independent other half; the unfolded result agrees with truth to within $2\%$,
+consistent with the statistical uncertainty. The iteration scan that sets
+$N_{\mathrm{iter}}$ is propagated as the unfolding-iteration systematic
+(Sec.~\ref{sec:syst}, item~5.7) and the prior reweighting as item~5.6.
+
+% ============================================================
+\section{Systematic Uncertainties}
+\label{sec:syst}
+% ============================================================
+
+The systematic uncertainties are grouped by source. Maximum per-bin values
+(quoted as down/up where asymmetric) are collected in Table~\ref{tab:syst}.
+
+\begin{description}
+  \item[5.1 Energy scale (flat).] A $\pm1.1\%$ shift of the EMCal energy scale
+        produces a maximum cross-section variation of $-10.5\%/+12.2\%$.
+  \item[5.1 Energy scale (non-linearity).] A non-linearity slope $s=5\times10^{-4}$
+        gives up to $\pm7.2\%$.
+  \item[5.2 Energy resolution.] The nominal MC smearing
+        $\sigma_{\mathrm{MC}}=(0.185,0,0.040)$ is compared to a data-like
+        $\sigma_{\mathrm{data}}=(0.15,0.05,0.05)$, with variations of no extra
+        smearing and $(0.13,0.08,0.08)$; the maximum effect is $\pm9.6\%$
+        (up to $\pm21.2\%$ in the most extreme bin).
+  \item[5.3.1 Tight-ID variation.] Shifting the tight BDT threshold by $+0.05$
+        gives $\pm10.4\%$.
+  \item[5.3.2 Non-tight variation.] Shifting the non-tight threshold by $-0.10$
+        gives $\pm2.1\%$.
+  \item[5.3.3 Non-isolation definition.] Using \texttt{noniso04}/\texttt{noniso10}
+        control regions gives $-5.1\%/+0.9\%$.
+  \item[5.3.4 Fit functional form.] Using an error-function fit form gives
+        $\pm0.7\%$.
+  \item[5.3.5 Fit confidence interval.] The purity-fit CI gives $-8.1\%/+8.2\%$.
+  \item[5.3.6 MC closure.] The purity-method closure gives $\pm12.0\%$ (largest
+        at low $\ETg$).
+  \item[5.4.1 Isolation pedestal.] $\pm5.0\%$.
+  \item[5.4.2 \textsc{herwig} cross-check.] Re-deriving efficiencies with
+        \textsc{herwig}~7 gives $\pm5.3\%$.
+  \item[5.5 MBD vertex.] $\pm6\%$.
+  \item[5.6 Response reweighting.] $\pm0.8\%$.
+  \item[5.7 Unfolding iteration scan.] $\pm4.7\%$.
+  \item[5.8 Double-interaction blending.] Best-fit blend fractions
+        $f_{\mathrm{best}}=0.290$ (0~mrad) and $0.000$ (1.5~mrad) give $\pm1.6\%$.
+  \item[5.9 NPB cut.] Varying the NPB working point gives $-1.4\%/+6.1\%$.
+  \item[5.10 Luminosity.] $+9.13\%/-6.75\%$.
+\end{description}
+
+\begin{longtable}{lcc}
+\caption{Maximum per-bin systematic uncertainties [\%] (down / up where
+applicable).}\label{tab:syst}\\
+\toprule
+Source & Max down [\%] & Max up [\%] \\
+\midrule
+\endfirsthead
+\toprule
+Source & Max down [\%] & Max up [\%] \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Energy scale (flat)        & 10.49 & 11.87 \\
+Energy scale (non-lin.)    & 7.26  & 7.26  \\
+Energy resolution          & 21.21 & 21.21 \\
+Purity -- tight            & \multicolumn{2}{c}{6.72} \\
+Purity -- non-tight        & \multicolumn{2}{c}{2.35} \\
+Purity -- non-iso          & 3.80  & 0.99  \\
+Purity -- fit form         & \multicolumn{2}{c}{0.33} \\
+Purity -- fit stat (CI)    & \multicolumn{2}{c}{4.40} \\
+Purity -- MC closure       & \multicolumn{2}{c}{5.77} \\
+Efficiency -- isolation    & \multicolumn{2}{c}{4.73} \\
+Efficiency -- \textsc{herwig} & \multicolumn{2}{c}{5.83} \\
+MBD vertex                 & \multicolumn{2}{c}{6.00} \\
+Unfolding -- reweight      & \multicolumn{2}{c}{0.36} \\
+Unfolding -- iteration     & \multicolumn{2}{c}{5.50} \\
+Double interaction         & \multicolumn{2}{c}{1.57} \\
+NPB cut                    & 1.03  & 4.54  \\
+Luminosity                 & 6.75  & 9.13  \\
+\midrule
+\textbf{Total}             & \textbf{30.80} & \textbf{31.72} \\
+\end{longtable}
+
+% ============================================================
+\section{Results}
+\label{sec:results}
+% ============================================================
+
+The reconstructed yield is obtained by unfolding the background-subtracted,
+purity-weighted signal,
+\begin{equation}
+  Y_{\mathrm{rec}} = \mathrm{Unfold}\big(N_{\mathrm{tight,iso}}\cdot P\big),
+\end{equation}
+and the isolated-prompt-photon differential cross section is
+\begin{equation}
+  \frac{d\sigma}{d\ETg\,d\eta}
+  = \frac{1}{\mathcal{L}}\,
+    \frac{Y_{\mathrm{rec}}}{\varepsilon\,\Delta\ETg\,\Delta\eta^{\gamma}},
+\end{equation}
+where $\varepsilon$ is the combined efficiency, $\Delta\ETg$ the bin width and
+$\Delta\eta^{\gamma}=1.4$ the pseudorapidity acceptance ($|\eta^{\gamma}|<0.7$).
+
+The fully corrected differential cross section (original Fig.~54) falls by
+roughly two orders of magnitude across the reported $12<\ETg<32$~GeV range. It is
+compared to two theory calculations. \textsc{pythia-8} (version~8.307, Detroit
+tune) is run with the same truth-level isolation as the data.
+\textsc{jetphox} (v1.3.1.4) computes the direct$+$fragmentation cross section at
+NLO with CT14nlo PDFs, BFG~II fragmentation functions, and scales
+$\mu_R=\mu_F=\mu_f=\ETg$; an additional NLO prediction without isolation is
+overlaid for reference. Both calculations agree with the measurement within
+experimental uncertainties across the full $\ETg$ range, supporting the
+gluon-Compton-dominance picture at the parton momentum fractions probed here.
+
+The measurement is systematics-dominated over the whole range. The statistical
+uncertainty grows from sub-percent at the lowest reported bin to about $30\%$ at
+the highest but remains subdominant. The energy-scale and double-interaction
+systematics dominate the high-$\ETg$ budget, while the purity (fit-CI and
+MC-closure) and luminosity sources drive the low-$\ETg$ budget; the total
+systematic ranges from about $\pm14\%$ at low $\ETg$ to $-30.8\%/+31.7\%$ near the
+top of the range (Table~\ref{tab:syst}).
+
+The result is also compared to the earlier PHENIX measurement (Ref.~[1], original
+Fig.~55), which reports inclusive direct photons (no isolation) in $|\eta|<0.25$.
+The PHENIX spectrum is shown both as published and after the bin-width recovery
+and pseudorapidity-density rescaling of Appendix~\ref{app:phenix}; the corrected
+spectrum is consistent with the present measurement within uncertainties across
+the overlap range, with the small residual offset attributable to the
+fragmentation contribution that survives the truth-level isolation cut.
+
+% ============================================================
+\section{Conclusion}
+% ============================================================
+
+This note presents the first sPHENIX measurement of the isolated-prompt-photon
+differential cross section in $p+p$ collisions at $\sqrts=200$~GeV, for
+$|\eta^{\gamma}|<0.7$ and $12<\ETg<32$~GeV, with a truth isolation
+$\Eiso^{\mathrm{truth}}<4$~GeV in $\dr=0.3$ and an integrated luminosity of
+$64.37~\mathrm{pb}^{-1}$. The result is corrected for background via a
+data-driven double-sideband purity method, for efficiency, and for detector
+resolution via iterative Bayesian unfolding, and is found to be consistent with
+NLO pQCD (\textsc{jetphox}) and with \textsc{pythia-8}, as well as with the
+earlier PHENIX measurement. The measurement demonstrates the photon
+reconstruction and identification capabilities of the sPHENIX calorimeter system
+and provides a foundation for future gluon-PDF-sensitive measurements at RHIC.
+
+% ============================================================
+\section*{References}
+\addcontentsline{toc}{section}{References}
+% ============================================================
+\begin{enumerate}[label={[\arabic*]}]
+  \item PHENIX Collaboration, isolated direct photons in $p+p$ at
+        $\sqrts=200$~GeV, Phys.\ Rev.\ D \textbf{86}, 072008.
+  \item \textsc{pythia} 8.2, an introduction to PYTHIA 8.2.
+  \item \textsc{geant4}, a simulation toolkit.
+  \item M.\ Spousta and B.\ Cole, jet-substructure / photon studies.
+  \item sPHENIX EMCal test-beam results.
+  \item ATLAS topo-cluster reconstruction, Eur.\ Phys.\ J.\ C \textbf{77}, 490.
+  \item ATLAS isolated-photon cross section, JHEP \textbf{10} (2019) 203.
+  \item G.\ D'Agostini, iterative Bayesian unfolding.
+  \item T.\ Adye, RooUnfold.
+  \item sPHENIX PPG-10 luminosity note.
+  \item ATLAS electron/photon performance, JINST \textbf{14}, P12006.
+  \item Detroit tune, Phys.\ Rev.\ D \textbf{105}, 016011.
+  \item BFG photon fragmentation functions.
+\end{enumerate}
+
+
+\newpage
+% ============================================================
+\appendix
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+% ============================================================
+
+\section{NPB purity and efficiency scans}
+\label{app:npb}
+The non-physics-background (NPB) discriminant introduced in
+Sec.~\ref{sec:analysis} is a dedicated XGBoost classifier whose purpose is to
+remove energy depositions in the EMCal that are not associated with a genuine
+$p+p$ collision: out-of-time clusters, electronic noise, and beam-induced
+``streak'' clusters that align in a narrow band of constant $\eta$ or $\phi$.
+These clusters are pathological in that they carry no recoil activity and have
+shower shapes that lie outside the physical phase space populated by single
+photons or by hadronic showers. Because they survive into the photon-candidate
+sample if left untreated, they would inflate the measured yield and bias the
+purity extraction; the NPB BDT is therefore applied \emph{before} the photon-ID
+BDT and the isolation classification.
+
+The BDT is trained using cluster timing as the supervisory label. The cluster
+time is referenced to the MBD event time, and clusters with
+$t_{\mathrm{cluster}} - t_{\mathrm{MBD}} < -7$~ns are tagged as NPB, since
+genuine collision clusters are tightly peaked in time around the beam crossing
+whereas out-of-time and beam-induced deposits populate the early tail. Twenty-five
+input features are used, and training and evaluation are restricted to the
+fiducial region $6 < \ET < 40$~GeV and $|\eta| < 0.7$, slightly wider in $\ET$
+than the analysis window so that the turn-on and the high-$\ET$ tail are both
+well sampled.
+
+The working-point study scans the NPB BDT threshold and records, as a function
+of $\ETg$, both the photon purity (the fraction of selected clusters that are
+genuine physics clusters, estimated from the timing-labeled control sample) and
+the signal-retention efficiency (the fraction of genuine clusters that survive
+the cut). The nominal cut $\mathrm{NPB}>0.5$ achieves approximately $99\%$
+purity while retaining approximately $99\%$ of genuine clusters, an unusually
+favorable operating point that reflects the cleanly separated, almost
+non-overlapping NPB and physics populations in the timing-trained feature space.
+To bracket the residual modeling dependence of this choice the cut is loosened to
+$0.3$ and tightened to $0.7$; the resulting per-bin variation of the unfolded
+cross section is propagated as the NPB systematic (Sec.~\ref{sec:syst},
+item~5.9), where it is found to be small except at the lowest $\ETg$ bin. An
+independent, physics-based cross-check of the same BDT using a back-to-back
+recoil-jet requirement is presented in Appendix~\ref{app:b2b}.
+
+\section{Shower-shape distributions and correlations}
+\label{app:showershape}
+This appendix collects the detector-level shower-shape distributions that
+motivate the variable choices of Tables~\ref{tab:showershape} and~\ref{tab:idbdt}
+and that underpin both the NPB rejection and the photon-ID BDT. The original
+note's Figs.~57, 13, 58, 19, 59 and~60 show these distributions for data, signal
+MC, inclusive (background-dominated) MC, and an NPB-enriched data template,
+together with their pairwise correlations.
+
+\paragraph{Distributions without preselection.} At low $\ETg$ ($14$--$18$~GeV,
+original Fig.~57) the shower-shape variables are shown before any preselection
+for four overlaid samples: data (black), signal MC (red), inclusive MC (blue),
+and an NPB-tagged data template (green). The NPB-tagged template is the subset of
+data selected as streak-like by a high center-of-gravity width
+$w_{\mathrm{COGX}\,\eta}$ tag; it is normalized to the bulk data by tail-matching
+in the region $w_{\mathrm{COGX}\,\eta} > 1$, where the streak population
+dominates, and serves as a background-enhanced template for the non-physics
+component. The comparison demonstrates that the streak clusters occupy the broad
+high-$w$ tail that is essentially absent in the signal MC, which is precisely
+what the NPB BDT exploits.
+
+\paragraph{Effect of preselection.} The same distributions are shown after the
+loose preselection (original Fig.~58, here at $10$--$14$~GeV). The preselection
+suppresses the high-tail population in the variables most sensitive to
+non-physics backgrounds, $w_{\mathrm{COGX}\,\eta}$ in particular, while leaving
+the bulk of the physics-cluster shapes essentially unchanged. The per-panel
+$\chi^2/\mathrm{ndf}$ between inclusive MC and data remains large for several
+variables, a reminder that the inclusive MC is a mixture whose composition
+(signal fraction, NPB fraction, pileup fraction) is not identical to data; the
+purity method (Sec.~\ref{sec:analysis}) is designed to be robust against exactly
+this kind of template imperfection, since it extracts the signal yield from the
+data sidebands rather than from an absolute MC normalization.
+
+\paragraph{Correlation with isolation.} It is important that the shower-shape
+discriminant and the isolation variable be as uncorrelated as possible for
+background, because the double-sideband (ABCD) purity method assumes
+factorization of the two axes. The original Figs.~59 and~60 show the mean
+isolation energy $\langle \Eiso\rangle$ as a function of each shower-shape value,
+for background MC, at low ($10$--$14$~GeV) and high ($28$--$30$~GeV) $\ETg$. The
+measured linear correlation coefficients are modest, ranging from about $-0.26$
+to $+0.42$ depending on the variable and the $\ETg$ range; the width variables
+$w_{\mathrm{COGX}\,\eta}$ and $w_{\mathrm{COGX}\,\phi}$ are the most strongly
+(positively) correlated with isolation, while the ring transverse energies
+$E_{t2}$--$E_{t4}$ are nearly uncorrelated. These residual correlations are the
+physical origin of the signal-leakage correction applied to the ABCD result and
+are quantified by the MC closure test described in Sec.~\ref{sec:analysis}.
+
+\section{Isolation distributions}
+\label{app:isodist}
+The reconstructed isolation-energy distribution $\Eiso$ is the second axis of the
+double-sideband purity method, and its behavior as a function of $\ETg$ and of
+photon-ID category is what makes the ABCD construction work. The original note's
+Fig.~61 shows $\Eiso$ in six $\ETg$ bins spanning $10$--$30$~GeV, overlaying three
+samples: tight-ID photons in inclusive MC (black), non-tight-ID photons in
+inclusive MC (red), and tight-ID photons in signal MC (blue).
+
+Several features support the analysis design. First, the tight signal-MC
+distribution is sharply peaked near $\Eiso \approx 0$ with a narrow tail,
+confirming that genuine isolated prompt photons deposit very little additional
+energy in the cone; this is what justifies the $80\%$-efficiency isolation
+working point $\Eiso < 0.490 + 0.0370\,E_{\mathrm{reco}}$~GeV. Second, the
+non-tight inclusive sample is shifted to substantially larger $\Eiso$, reflecting
+the jet-like environment of the meson-decay and fragmentation backgrounds that
+populate the non-tight ID region; this is the basis for using the non-tight
+sample as a background-shape control. Third, the separation between the signal
+peak and the background tail grows with $\ETg$, which is the microscopic reason
+the extracted purity rises from $\sim0.5$ at $10$--$12$~GeV to $\sim0.9$ above
+$26$~GeV.
+
+The simulated $\Eiso$ distribution does not match data perfectly, because the
+underlying-event activity and the soft-particle spectrum entering the cone are
+imperfectly modeled. This residual mismatch is corrected with the linear
+``fudge'' transformation
+$\Eiso^{\mathrm{MC,corr}} = 1.2\,\Eiso^{\mathrm{MC}} + 0.1$~GeV introduced in
+Sec.~\ref{sec:analysis}; the slope and offset are tuned so that the
+fudge-corrected MC reproduces the data isolation shape in a background-dominated
+control region. The adequacy of this correction is one of the inputs to the
+purity MC-closure systematic (Sec.~\ref{sec:syst}, item~5.3.6), and the
+sensitivity to the precise pedestal value is captured by the isolation-pedestal
+systematic (item~5.4.1).
+
+\section{Shower-shape cut comparison}
+\label{app:cutcomp}
+This appendix documents the effect of the loose preselection chain on the
+shower-shape distributions and, by extension, justifies the choice of a BDT
+photon identifier over a traditional sequential (rectangular) cut selection. The
+original note's Fig.~62 ($10<\ETg<12$~GeV) and Fig.~63 ($26<\ETg<35$~GeV) show,
+for the inclusive-MC background sample, each shower-shape variable before any cut
+(blue) and after the full preselection chain of Table~\ref{tab:presel}
+(red): the central-fraction requirement $E_{1\times1}/E_{3\times3}<0.98$, the
+first-ring transverse energy window $0.6<e_{t1}<1.0$, the window ratio
+$0.8<E_{3\times2}/E_{3\times5}<1.0$, and the NPB score requirement
+$\mathrm{NPB}>0.5$.
+
+The qualitative message is that the preselection suppresses the high tails of the
+variables that are sensitive to non-physics background, most visibly the
+center-of-gravity width $w_{\mathrm{COGX}\,\eta}$, while having little effect on
+the core of the physics-cluster shapes. In other words, the preselection removes
+the pathological clusters without sculpting the discriminating variables of the
+genuine population, which is the desired behavior before the multivariate
+photon-ID step.
+
+The broader motivation for using a BDT rather than a sequential cut is that the
+shower-shape variables are correlated, so a product of one-dimensional
+rectangular windows discards discriminating information contained in their joint
+distribution. The photon-ID BDT (Table~\ref{tab:idbdt}) combines the eleven
+inputs into a single discriminant and, evaluated at fixed signal efficiency,
+yields a higher background rejection than the equivalent rectangular selection.
+The BDT also allows the working point to depend smoothly on $\ETg$ (the
+tight/non-tight thresholds of Table~\ref{tab:presel} are linear in $\ETg$), which
+accommodates the $\ETg$-dependence of both the signal shower shapes and the
+background composition in a way that fixed cuts cannot.
+
+\section{$\phi$-symmetry tower acceptance}
+\label{app:phisym}
+This appendix studies the residual data--MC mismatch in the EMCal dead-tower
+acceptance and derives a purely data-driven systematic on the cross section from
+it. The sPHENIX EMCal contains dead and malfunctioning towers whose response is
+not perfectly emulated by the \textsc{geant-4} simulation. If the set of dead
+towers active in Run~24 data differs from the set modeled in MC, the
+MC-derived reconstruction efficiency is biased high in the affected regions,
+which in turn biases the measured cross section low. The $\phi$-symmetry method
+exploits the fact that the inclusive cluster yield is $\phi$-symmetric at fixed
+$\eta$ in $p+p$ collisions to derive a dead-tower mask directly from data,
+without relying on any particular MC dead-tower list. Because the same mask is
+then applied identically to numerator and denominator on both the data and MC
+sides, the efficiency-corrected cross section becomes sensitive only to the
+residual data-versus-MC asymmetry in the masked region, not to the absolute mask
+coverage.
+
+\paragraph{Method.} The EMCal is binned in tower index as
+$96\,(i_\eta)\times256\,(i_\phi)$. The towers are grouped into $48$ two-row
+$\eta$ bands. For each band the $256$ per-$\phi$ cluster counts are projected out.
+Under the assumption of $\phi$-symmetry, deviations from a flat distribution
+trace either statistical fluctuations or local detector effects. An iterative
+$3\sigma$-clipped Gaussian is fit to the $256$-bin distribution, yielding a
+band-by-band mean $\mu_{\phi,\mathrm{band}}$ and width $\sigma_{\phi,\mathrm{band}}$.
+A tower $(i_\eta,i_\phi)$ is flagged as data-deficient when
+$(n_{\mathrm{data}}-\mu_{\phi,b})/\sigma_{\phi,b} < -2$; both $\eta$ rows in the
+band are masked whenever a $\phi$ bin is flagged. The original note's Fig.~64
+shows an example for the band $i_\eta=64$--$67$ ($\eta\approx0.37$--$0.46$), in
+which a contiguous block of $\phi$ cells around $i_\phi\approx30$--$45$ falls well
+below the $\mu-2\sigma$ threshold and is tagged.
+
+Four masks are built at successively tighter selection levels: (i)~\emph{preselect}
+($\ETg\ge8$~GeV with no-saturation and no shape cuts); (ii)~\emph{common}
+(preselect intersected with the NPB cut, $E_{1\times1}/E_{3\times3}<0.98$, and the
+width windows); (iii)~\emph{tight} (common intersected with the ten shower-shape
+windows and the parametric BDT requirement); and (iv)~\emph{OR} (the union of the
+common and tight masks). The corresponding masked-tower counts are $1344$, $1160$,
+$646$ and $1180$. The monotonic decrease with selection tightness is the expected
+statistical behavior: the tighter samples have lower per-$\phi$ statistics, so the
+fit width $\sigma$ is broader and fewer bins fall below the $-2\sigma$ threshold.
+The tight mask is largely contained in the common mask (a $626$-tower overlap), so
+the OR mask adds only about $20$ towers relative to common alone.
+
+\paragraph{Results.} The mask is applied as a cluster-level veto, identically to
+data and MC, and the full efficiency, merge, and yield pipeline is re-run for each
+variant. The resulting integrated cross-section shifts, evaluated in
+$\ETg\in[10,36]$~GeV relative to the mask-free nominal
+$\sigma_{\mathrm{nom}}=1963$~pb, are collected in Table~\ref{tab:phisym}. All four
+shifts are positive, as expected: masking removes MC content in data-dead regions
+that was inflating the MC-derived efficiency, so the corrected cross section rises
+once the asymmetry is removed. The four variants agree to within about $1\%$,
+consistent with a uniform detector-level dead-tower effect, and the per-$\ETg$-bin
+ratios lie within $\pm3\%$ of unity across $\ETg\in[10,30]$~GeV (original Fig.~67).
+The larger scatter in the highest $[32,36)$~GeV bin is statistical and does not
+affect the integrated result, which is dominated by the low-$\ETg$ region.
+
+An independent estimator rebins the data and lumi-weighted MC tower maps into
+$4\times4$ super-cells and flags super-cells whose $\log(R)$ of the data/MC ratio
+deviates below a Gaussian fit to the bulk; this tags $2$--$3\%$ of super-cells per
+selection level and yields an integrated shift agreeing with the $\phi$-symmetry
+mask to about $1\%$. The convergence of two independent data-driven estimators on
+the same $\sim2\%$ level provides a robust bound that does not rely on any specific
+MC dead-tower list. The per-bin envelope adopted for the systematic, taken from
+the OR mask, is $\pm1.57\%$.
+
+\begin{table}[h]
+\centering
+\caption{$\phi$-symmetry tower-acceptance cross-check. Nominal cross section
+$\sigma_{\mathrm{nom}}=1963$~pb; shifts for each mask definition.}
+\label{tab:phisym}
+\begin{tabular}{lr}
+\toprule
+Mask & Shift [\%] \\
+\midrule
+Preselection & $+2.01$ \\
+Common       & $+2.26$ \\
+Tight        & $+1.37$ \\
+Logical OR   & $+2.28$ \\
+\midrule
+Per-bin envelope & $\pm1.57$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{\textsc{jetphox} PDF dependence}
+\label{app:jetphox}
+The NLO theory reference used for comparison with the measured cross section is
+\textsc{jetphox} (v1.3.1.4) with the CT14nlo parton distribution functions and
+the BFG~II photon fragmentation functions. \textsc{jetphox} computes the
+isolated-photon cross section at next-to-leading order in $\alpha_s$, including
+both the direct contribution (the photon produced in the hard matrix element) and
+the fragmentation contribution (the photon produced in the collinear
+fragmentation of a final-state parton), with the fragmentation piece evolved
+through the BFG fragmentation functions. To quantify the PDF-driven spread of the
+theory prediction --- and in particular its sensitivity to the proton gluon
+density, which the Compton subprocess $qg\to q\gamma$ makes the dominant initial
+state at RHIC --- the production is rerun with two alternative PDF sets, the LO
+CT14lo set and the NLO NNPDF3.1 set ($\alpha_s(M_Z)=0.118$), using identical
+kinematic and fragmentation settings.
+
+\paragraph{Method.} All three productions share the same configuration:
+$\sqrts=200$~GeV $p+p$, photon rapidity $|y|<0.7$, direct$+$fragmentation
+components with BFG~II, a fixed-cone truth isolation with $R=0.3$ and
+$\Eiso^{\mathrm{truth}}<4$~GeV matching the analysis definition, and
+renormalization/factorization/fragmentation scales
+$\mu_R=\mu_F=\mu_f=c_m\cdot p_{\mathrm{T}}$ with $c_m\in\{0.5,1.0,2.0\}$ to map the
+scale uncertainty. Per scale point, $100$ segments of $10^6$ events each are
+generated, totaling $10^8$ events. The full PDF error set is computed for every
+point ($56$ CT14 Hessian eigenvector pairs for CT14lo/CT14nlo, $100$ Monte Carlo
+replicas for NNPDF3.1). The three productions are statistically independent: only
+the LHAPDF identifier differs and the random-number seeds are offset so that no
+event streams are shared. Pairing the LO CT14lo set with the NLO matrix element is
+a deliberate LO-in-NLO inconsistency --- the missing NLO gluon evolution is
+absorbed into an effective LO fit that is not strictly valid at all $x$ when
+convolved with the NLO hard cross section --- and is shown here only as a
+methodological probe of the LO-versus-NLO PDF effect, not as a physical
+prediction.
+
+\paragraph{Results.} Table~\ref{tab:jetphox} lists the central-scale
+($\mu=1.0\cdot p_{\mathrm{T}}$) per-bin cross section for the three PDF sets,
+with the ratios to CT14lo. Moving from the LO CT14lo set to an NLO set shifts the
+prediction monotonically in $\ETg$: at low $\ETg$ ($8$--$14$~GeV) the NLO PDFs lie
+$3$--$11\%$ \emph{above} CT14lo; at mid $\ETg$ ($14$--$26$~GeV) they lie
+$4$--$25\%$ below; and at the highest bins ($26$--$36$~GeV) they lie $27$--$50\%$
+below. The crossover near $\ETg\approx14$~GeV reflects the well-known
+LO-versus-NLO gluon difference: at the moderate $x\sim2\ETg/\sqrts\sim0.1$
+accessed at low $\ETg$ the LO gluon undershoots because NLO $K$-factors are
+absorbed into the LO fit, whereas at higher $x\gtrsim0.2$ the LO fit
+over-compensates to match jet data with the LO matrix element, an excess that the
+NLO matrix element times NLO PDF correctly suppresses. The two NLO PDFs
+(CT14nlo and NNPDF3.1) agree with each other to $\pm3\%$ at low $\ETg$ and grow
+apart to $\pm20\%$ in the highest bin, where the PDF-family spread becomes
+comparable to the renormalization-scale envelope ($\pm40\%$ from
+$\mu=0.5/1.0/2.0$). This confirms that the LO-versus-NLO PDF effect, rather than
+the specific NLO fit family, is the dominant PDF-driven theory uncertainty.
+
+\begin{longtable}{lrrrrr}
+\caption{\textsc{jetphox} cross section [pb] per $\ETg$ bin for three PDF sets
+and ratios to CT14lo.}\label{tab:jetphox}\\
+\toprule
+$\ETg$ [GeV] & CT14lo & CT14nlo & NNPDF3.1 & nlo/lo & nnpdf/lo \\
+\midrule
+\endfirsthead
+\toprule
+$\ETg$ [GeV] & CT14lo & CT14nlo & NNPDF3.1 & nlo/lo & nnpdf/lo \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+8--10   & 1519  & 1673  & 1690  & 1.101 & 1.113 \\
+10--12  & 539.9 & 571.2 & 575.4 & 1.058 & 1.066 \\
+12--14  & 218.5 & 222.2 & 225.1 & 1.017 & 1.030 \\
+14--16  & 98.4  & 96.2  & 94.4  & 0.978 & 0.959 \\
+16--18  & 47.0  & 44.0  & 41.9  & 0.937 & 0.891 \\
+18--20  & 23.5  & 20.8  & 19.1  & 0.887 & 0.815 \\
+20--22  & 9.82  & 8.60  & 8.01  & 0.876 & 0.816 \\
+22--24  & 6.54  & 5.53  & 4.95  & 0.846 & 0.756 \\
+24--26  & 3.66  & 2.93  & 2.73  & 0.799 & 0.745 \\
+26--28  & 2.10  & 1.41  & 1.37  & 0.669 & 0.651 \\
+28--32  & 0.940 & 0.608 & 0.579 & 0.647 & 0.616 \\
+32--36  & 0.323 & 0.236 & 0.165 & 0.731 & 0.510 \\
+\midrule
+Integrated 8--36 & 4942 & 5294 & 5330 & $+7.1\%$ & $+7.9\%$ \\
+\end{longtable}
+
+\section{Back-to-back jet NPB cross-check}
+\label{app:b2b}
+This appendix provides an independent, physics-based validation of the
+non-physics-background BDT that does not rely on the timing label used to train
+it. The NPB BDT is trained against beam-induced streak clusters that are not
+associated with a real $p+p$ collision and therefore carry no recoil jet. By
+contrast, a genuine direct or fragmentation photon (and a high-$\ET$ $\pi^0$
+candidate) is produced in a $2\to2$ hard scattering and is accompanied by a
+balancing parton in the opposite hemisphere. Requiring a back-to-back recoil jet
+(``b2b jet'') therefore selects a sample that is physically depleted of NPB
+clusters, independently of any shower-shape-based veto. Comparing the unfolded
+cross section in this b2b-enriched sample with and without the NPB BDT cut is thus
+a clean closure test: if the BDT is unbiased on real photons, the two should agree
+to within statistics.
+
+\paragraph{Method.} Four variants are produced on top of the analysis pipeline.
+\texttt{b2bjet\_pt5} adds a recoil-jet requirement with $p_{\mathrm{T}}^{\mathrm{jet}}\ge5$~GeV
+back-to-back in $\phi$ ($|\Delta\phi|>3\pi/4$), keeping the nominal NPB cut
+$\mathrm{NPB}>0.5$. \texttt{b2bjet\_pt5\_npb0} is the same but with the NPB cut
+switched off. \texttt{b2bjet\_pt7} and \texttt{b2bjet\_pt7\_npb0} repeat these with
+the higher threshold $p_{\mathrm{T}}^{\mathrm{jet}}\ge7$~GeV. Each variant runs the
+full data$+$MC pipeline (purity, unfolding, efficiency, luminosity normalization)
+at the same $\mathcal{L}=64.37~\mathrm{pb}^{-1}$ as the nominal, and the resulting
+differential cross section is compared bin-by-bin to the nominal selection.
+
+\paragraph{Results.} Two conclusions follow (original Figs.~69 and~70). First, the
+NPB-on and NPB-off curves of the same recoil-jet threshold overlay tightly across
+the analysis range: bin-by-bin,
+$|\sigma_{\mathrm{pt5}}/\sigma_{\mathrm{nom}}-\sigma_{\mathrm{pt5,npb0}}/\sigma_{\mathrm{nom}}|\le1.0\%$
+and the corresponding $p_{\mathrm{T}}^{\mathrm{jet}}\ge7$~GeV difference is
+$\le0.5\%$, with the largest values in the lowest bin. The NPB cut therefore does
+not change the answer once a genuine recoil jet is required, exactly the behavior
+expected if the BDT is unbiased on real photons. Second, the b2b-enriched cross
+section sits $6$--$10\%$ below the nominal in the lowest bin ($12$--$14$~GeV) and
+recovers to within $\pm10\%$ of nominal for $\ETg\ge14$~GeV. The deficit is larger
+for the $p_{\mathrm{T}}^{\mathrm{jet}}\ge7$~GeV variant ($10.0\%$) than for the
+$\ge5$~GeV variant ($6.9\%$), which is the ordering expected from recoil-jet
+\emph{acceptance}: at low $\ETg$ the recoil parton is soft and hadronizes into a
+low-$\pt$ jet that the b2b cut sometimes rejects, more often at the higher
+threshold. This interpretation is confirmed directly by the truth-level recoil-jet
+probability (original Fig.~70), which rises from about $36\%$ ($24\%$) at
+$\ETg=10$--$12$~GeV for $p_{\mathrm{T}}^{\mathrm{jet}}\ge5$ ($7$)~GeV to about
+$75\%$ ($71\%$) at $\ETg=32$--$36$~GeV. The low-$\ETg$ deficit is therefore a
+recoil-jet-acceptance effect inherited from the \textsc{pythia-8} fragmentation
+modeling, not an NPB-cut bias, and is not propagated as a systematic on the
+nominal cross section.
+
+\section{PHENIX comparison corrections}
+\label{app:phenix}
+The PHENIX measurement of inclusive direct photons (Ref.~[1]) is reported in the
+rapidity acceptance $|\eta|<0.25$ as a representative cross section per $\ETg$ bin
+derived from the invariant cross section $E\,d^3\sigma/dp^3$. To overlay it on the
+present isolated-photon measurement at $|\eta^{\gamma}|<0.7$ on an equal footing
+(original Fig.~55), two corrections are applied to the published points: a
+bin-width recovery from a smooth fit, and a pseudorapidity-density rescaling
+derived from prompt-photon truth simulation. Both corrections preserve the
+published central values and their fractional statistical uncertainties; they only
+remove geometric and binning differences between the two experiments.
+
+\paragraph{Bin-width recovery.} The PHENIX invariant cross section is first
+converted to the differential form $d^2\sigma/(d\eta\,d\ETg)$ through the Jacobian
+$2\pi\,\ETg$, and the result is fit over the published $5$--$26$~GeV range with a
+smooth modified power law
+\begin{equation}
+  f(\ETg) = A\left(1 + \frac{(\ETg)^{2}}{b}\right)^{c},
+  \qquad A=4.53\times10^{5},\; b=6.34,\; c=-3.602,
+\end{equation}
+with $\chi^2/\mathrm{ndf}=28.07/15$ and per-bin pulls bounded by $|2.5|$. Because
+PHENIX quotes each point at the bin center after its own bin-shift correction,
+converting to a strict bin average requires only a smooth multiplicative shape
+factor read off the fit,
+\begin{equation}
+  y_i^{\mathrm{bin\text{-}avg}} = y_i^{\mathrm{pub}}\,
+  \frac{\langle f\rangle_i}{f((\ETg)^c_i)},
+  \qquad
+  \langle f\rangle_{\mathrm{bin}}
+  = \frac{1}{\Delta\ETg}\int_{\mathrm{bin}} f(\ETg)\,d\ETg,
+\end{equation}
+where $(\ETg)^c_i$ is the bin center. Only the few-percent shape distortion of a
+steeply falling spectrum within finite-width bins is removed; the published value
+and its statistical scatter are preserved.
+
+\paragraph{Pseudorapidity-density rescaling.} The two experiments cover different
+rapidity intervals, so the spectra are placed on a common acceptance via the
+density ratio
+\begin{equation}
+  R(\ETg) = \frac{(dN/d\eta)|_{|\eta|<0.25}}{(dN/d\eta)|_{|\eta|<0.7}},
+\end{equation}
+evaluated from prompt-photon truth simulation (\textsc{pythia-8},
+direct$+$fragmentation, no isolation requirement) on the analysis truth-$\pt$
+grid (original Fig.~72). The ratio is consistent with unity to within $0.5\%$
+below $\ETg\approx14$~GeV and rises monotonically to $R\approx1.22$ at
+$\ETg=36$--$45$~GeV, reflecting the narrowing of the rapidity distribution of
+$2\to2$ prompt-photon production at the higher Bjorken-$x$ accessed at high
+$\ETg$. Each bin-averaged PHENIX value is divided by $R((\ETg)^c_i)$ to produce
+the $|\eta|<0.7$-equivalent spectrum. Imposing the truth isolation
+$\Eiso^{\mathrm{truth}}<4$~GeV on the prompt-photon sample shifts $R(\ETg)$ by
+less than $0.1\%$ in every bin, so the same factor applies to PHENIX's inclusive
+fiducial within the precision of either measurement.
+
+\section{MBD photon/jet cross-check}
+\label{app:mbd}
+The MBD-vertex efficiency --- the probability that the minimum-bias detector
+reconstructs a valid event vertex, $z_{\mathrm{reco}}\ne-9999$ --- enters the
+cross section as one of the four efficiency factors of Sec.~\ref{sec:analysis}.
+Because this efficiency depends on the forward particle activity that fires the
+MBD, it could in principle differ between the photon-triggered topology and a
+generic jet topology. This appendix verifies that it does not, which justifies
+transferring the MBD systematic between channels (Sec.~\ref{sec:syst}, item~5.5).
+
+The MBD-vertex-found fraction is computed in \textsc{pythia-8} as a function of
+the leading truth $\pt$, separately for the photon channel (the
+\texttt{photon\,5/10/20} samples, using the leading truth-photon $\pt$) and for
+the jet channel (the \texttt{jet\,5/8/12/20/30/40} samples, using the leading
+$R=0.4$ truth-jet $\pt$). Per-sample truth-$\pt$ windows
+(Table~\ref{tab:ptwin}) prevent double-counting across sample boundaries, and each
+event carries the weight $\sigma_i/N_i^{\mathrm{gen}}$. The two channels overlay
+to within $1\%$ across the full reported range (original Fig.~73) and fall
+monotonically from about $0.80$ at $p_{\mathrm{T}}^{\mathrm{lead}}=5$~GeV to about
+$0.66$ at $35$~GeV. The decline reflects the reduced forward activity at higher
+Bjorken-$x$: as the hard scale rises, more of the collision energy is carried into
+the central region and less into the forward MBD acceptance, lowering the
+coincidence probability. The channel-level agreement demonstrates that the
+MBD-vertex efficiency is governed by the underlying-event and beam-remnant
+activity rather than by the hard-process flavor, which is what permits the
+data-driven MBD efficiency (derived in the PPG-10 luminosity note) to be applied
+to the photon measurement.
+
+\section{Double-interaction (pileup) modeling}
+\label{app:di}
+At the luminosities reached in Run~24 a non-negligible fraction of bunch crossings
+contain more than one $p+p$ collision. A second, overlapping collision affects the
+photon measurement in two distinct ways: it adds soft energy that can enter the
+isolation cone, and --- more importantly --- it biases the reconstructed event
+vertex, which in turn shifts the inferred cluster pseudorapidity and distorts the
+shower-shape inputs to the photon-ID BDT. This appendix develops the full
+double-interaction (DI) model used throughout the analysis. Rather than applying a
+factorized after-the-fact correction, the analysis builds dedicated full-\textsc{geant}
+DI samples and \emph{blends} them with the single-interaction (SI) samples at the
+physically determined cluster fraction, so that the efficiency, the response
+matrix, and the background template all inherit the pileup effects consistently.
+
+\paragraph{DI samples.} Dedicated \texttt{photon\{5,10,20\}\_double} and
+\texttt{jet\{8,12,20,30,40\}\_double} samples are produced by full simulation of
+two overlapping $p+p$ collisions: one hard-scatter event drawn from the same
+\textsc{pythia-8} generator as the corresponding SI sample, plus one minimum-bias
+\textsc{pythia-8} (Detroit-tune) event overlaid as pileup. The two collisions are
+placed at independently drawn primary vertices from the generator beam profile.
+These DI samples are mixed with the nominal SI samples at the cluster-weighted
+fractions of Table~\ref{tab:di}, providing both the DI efficiency study and the
+shower-shape data--MC validation below.
+
+\paragraph{Pileup fractions.} The mean number of interactions per crossing is
+obtained from the Poisson-corrected MBD coincidence rate,
+\begin{equation}
+  \mu = \frac{\sum_{\mathrm{runs}} N_{\mathrm{MBD,corr}}}{r_B\,\sum_{\mathrm{runs}} \Delta t},
+  \qquad r_B = 111\times78\,200 = 8.68\times10^{6}~\mathrm{Hz},
+\end{equation}
+where $r_B$ is the RHIC bunch-crossing rate. The event-level interaction fractions
+follow a zero-truncated Poisson (one collision is guaranteed by the trigger),
+\begin{equation}
+  f_1 = \frac{\mu e^{-\mu}}{1-e^{-\mu}},\quad
+  f_2 = \frac{(\mu^2/2)e^{-\mu}}{1-e^{-\mu}},\quad
+  f_{\ge3} = 1-f_1-f_2,
+\end{equation}
+computed per run and luminosity-weighted. Because multi-interaction events carry a
+higher cluster multiplicity, the relevant quantities for the cluster-level blend
+are the cluster-weighted fractions
+\begin{equation}
+  w_{\mathrm{single}} = \frac{f_1}{\sum_k k\,f_k},\qquad
+  w_{\mathrm{double}} = \frac{2 f_2 + 3 f_{\ge3}}{\sum_k k\,f_k},
+\end{equation}
+with triple-and-higher interactions folded into the double bin (they are rare
+enough that the two-collision sample models them adequately). The resulting
+fractions and weights are given in Table~\ref{tab:di}; the cluster-weighted
+$w_{\mathrm{double}}$ values ($0.224$ at $0$~mrad, $0.079$ at $1.5$~mrad) are the
+numbers used throughout the analysis.
+
+\begin{table}[h]
+\centering
+\caption{Double-interaction parameters by crossing-angle configuration.}
+\label{tab:di}
+\begin{tabular}{lcc}
+\toprule
+Quantity & 0~mrad & 1.5~mrad \\
+\midrule
+$\mu_{\mathrm{corr}}$ & 0.24 & 0.08 \\
+$f_1$       & 0.879 & 0.960 \\
+$f_2$       & 0.111 & 0.039 \\
+$w_{\mathrm{single}}$ & 0.776 & 0.921 \\
+$w_{\mathrm{double}}$ & 0.224 & 0.079 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Vertex-shift mechanism.} In a DI event the MBD reconstructs a single
+vertex whose best estimator is the average of the two collision points,
+\begin{equation}
+  z_{\mathrm{reco}} \approx \frac{z_1 + z_2}{2}.
+\end{equation}
+The two true vertices are drawn from the luminous region (data) or the generator
+profile (MC), so the displacement between the primary truth vertex and the
+reconstructed vertex, $\Delta z\equiv z_{\mathrm{reco}}-z_{\mathrm{truth}}$, can
+reach several tens of cm. A cluster reconstructed at the EMCal barrel radius
+$R_{\mathrm{EMCal}}=93.5$~cm then acquires a pseudorapidity shift that follows
+directly from the geometry,
+\begin{equation}
+  \Delta\eta \approx -\frac{\Delta z}{R_{\mathrm{EMCal}}\cosh\eta},
+\end{equation}
+reducing at $\eta=0$ to $|\Delta\eta|\approx|\Delta z|/93.5~\mathrm{cm}$. This
+$\eta$ shift is the root cause of the shower-shape distortion that drives the
+photon-ID degradation below. The RMS of $\Delta z$ grows from $7.6$~cm in SI MC to
+$34.5$~cm in DI MC (Table~\ref{tab:dz}).
+
+A per-event check confirms that the second collision does not add genuine
+prompt-photon content: the mean number of truth photons per event is $0.493$
+(single) versus $0.495$ (double), and the mean truth isolation energy is
+$0.17$ versus $0.26$~GeV, both far below the $4$~GeV fiducial threshold. The DI
+effect is therefore a reconstruction effect, not a change in the underlying
+signal.
+
+\paragraph{Per-stage efficiency.} Truth-to-reco association uses the
+\textsc{geant} track-ID from the \texttt{CaloRawClusterEval} module as the
+unambiguous ground truth, with no additional geometric requirement (so that a
+fully reconstructed but $\eta$-shifted cluster is still counted as found). The
+factorized chain
+$\varepsilon_{\mathrm{reco}}\to\varepsilon_{\mathrm{iso}}\to\varepsilon_{\mathrm{id}}\to\varepsilon_{\mathrm{all}}$
+then isolates the stage at which each pileup effect acts; the integrated values
+for SI, DI, and the $0$~mrad mixed sample are given in Table~\ref{tab:dieff}.
+The reconstruction stage loses $20$ percentage points (pp), of which about
+$5.5$~pp is genuine cluster loss (no track-ID match: $7.9\%$ in DI versus $2.4\%$
+in SI) and about $15$~pp is common-cut failure from shifted kinematics. The
+isolation stage is barely affected ($-3$~pp), since the extra cone energy is small
+compared with the $4$~GeV threshold. The photon-ID stage loses $13$~pp, entirely
+driven by the vertex-displaced shower-shape inputs feeding the $\ET$-dependent BDT
+threshold: the vertex-shifted population has a BDT pass rate of only $\sim60\%$
+versus $82.7\%$ for the unshifted population. The integrated DI-induced efficiency
+reduction is about $9\%$ at $0$~mrad and about $3\%$ at $1.5$~mrad, scaling with
+the cluster-weighted pileup fraction.
+
+These effects are absorbed directly into the nominal pipeline rather than applied
+as a separate correction: the efficiency, the response matrix, and the
+inclusive-jet background template are all built from the SI$+$DI mixed ensemble,
+with each event carrying the weight
+$w = \sigma_{\mathrm{eff}}\cdot f_{\mathrm{mix}}\cdot\mathrm{TVR}(z_h,z_{mb})$,
+where $f_{\mathrm{mix}}=1-f_{\mathrm{DI}}$ for SI samples and $f_{\mathrm{DI}}$ for
+DI samples, and $\mathrm{TVR}$ is the truth-vertex reweight of
+Appendix~\ref{app:tvr}. The single free parameter $f_{\mathrm{DI}}$ is varied to
+obtain the systematic of item~5.8.
+
+\begin{table}[h]
+\centering
+\caption{RMS of $\Delta z$ for single and double interactions [cm].}
+\label{tab:dz}
+\begin{tabular}{lc}
+\toprule
+Class & RMS $\Delta z$ [cm] \\
+\midrule
+Single & 7.6 \\
+Double & 34.5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Per-stage efficiency [\%] for single, double and mixed events, and the
+net effect (percentage points).}
+\label{tab:dieff}
+\begin{tabular}{lcccc}
+\toprule
+Stage & Single & Double & Mixed & Effect \\
+\midrule
+$\varepsilon_{\mathrm{reco}}$ & 93.5 & 73.1 & 88.4 & $-20$~pp \\
+$\varepsilon_{\mathrm{iso}}$  & 74.2 & 71.0 & 73.5 & $-3$~pp  \\
+$\varepsilon_{\mathrm{id}}$   & 82.7 & 69.4 & 80.0 & $-13$~pp \\
+$\varepsilon_{\mathrm{all}}$  & 57.4 & 36.0 & 52.0 & $-21$~pp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Shower-shape data--MC validation.} Before fitting the blend fraction,
+the model is validated at the sample level. The most pileup-sensitive observable
+is the center-of-gravity width $w_{\mathrm{CoG}\eta}$, which is broadened directly
+by the vertex shift via the $\Delta\eta$ relation above; the photon-ID BDT score
+amplifies the residual through its nonlinear discriminant, while the
+energy-spread-driven observables ($f_1$, $E_{1\times1}/E_{3\times3}$) are far less
+DI-sensitive. The original Figs.~75--76 overlay pure SI MC, pure DI MC, and data
+from both crossing-angle periods, all area-normalized at the preselection cut. The
+$0$~mrad data systematically track the DI tail, while the $1.5$~mrad data track
+closer to the SI MC --- exactly as expected from their $22.4\%$ versus $7.9\%$
+pileup fractions --- providing a direct sample-level confirmation of the blending
+picture. Representative data$-$inclusive-MC $\chi^2/\mathrm{ndf}$ values for the
+two leading discriminants at the lowest and highest $\ETg$ bins are given in
+Table~\ref{tab:dichi2}; the mid- and high-$\ETg$ bins improve dramatically once
+the DI component is blended in, whereas the lowest bin is dominated by a residual
+DI--MC mismodeling discussed below.
+
+\paragraph{Data-driven blend-fraction scan.} The nominal blending uses the
+analytic cluster-weighted fractions $f_{\mathrm{DI}}=0.224$ ($0$~mrad) and
+$0.079$ ($1.5$~mrad). The systematic uncertainty on $f_{\mathrm{DI}}$ is sized by
+treating the fraction as a free parameter and minimizing the $\chi^2$ between the
+data and an inclusive MC rebuilt by shape interpolation,
+\begin{equation}
+  \mathrm{MC}_{\mathrm{incl}}(f) = (1-f)\,T_{\mathrm{SI}} + f\,T_{\mathrm{DI}}.
+\end{equation}
+The pure SI and DI templates $T_{\mathrm{SI}},T_{\mathrm{DI}}$ are recovered by
+``de-baking'' the analytic weights out of the combined hadds,
+$T_{\mathrm{SI}}=\mathrm{SI}_{\mathrm{total}}/(1-f_{\mathrm{DI}}^{\mathrm{anal}})$
+and
+$T_{\mathrm{DI}}=\mathrm{DI}_{\mathrm{total}}/f_{\mathrm{DI}}^{\mathrm{anal}}$,
+and the round-trip identity
+$(1-f)T_{\mathrm{SI}}+fT_{\mathrm{DI}}=\mathrm{SI}_{\mathrm{total}}+\mathrm{DI}_{\mathrm{total}}$
+at $f=f_{\mathrm{DI}}^{\mathrm{anal}}$ is verified numerically. The scan is a
+one-parameter shape-only $\chi^2$ against the data BDT-score distribution at the
+preselection cut (NPB-clean, jet-dominated), unit-area-normalized in each $\ETg$
+bin so that the absolute jet cross-section uncertainty does not leak into
+$f_{\mathrm{DI}}$. The BDT score is chosen because it aggregates the eleven
+shower-shape inputs through a discriminant already trained on the SI/DI
+separation. Each crossing angle is scanned over $f\in[0.00,0.50]$ in steps of
+$0.005$, summing residuals over five $\ETg$ cells ($5\times50=250$ bins). The
+before/after $\chi^2/\mathrm{ndf}$ for the two variables and two $\ETg$ ranges is
+given in Table~\ref{tab:dichi2}, and the scan minimum in Table~\ref{tab:discan}.
+
+The $0$~mrad scan has a clean parabolic minimum at $f_{\mathrm{best}}=0.290$, above
+the analytic anchor $0.224$; the $1.5$~mrad minimum sits at the lower scan edge
+$f_{\mathrm{best}}=0$, below the analytic anchor $0.079$. The residual
+$\chi^2/\mathrm{ndf}$ at the minimum is far from unity ($2.57$ and $3.20$), so the
+$\Delta\chi^2=1$ prescription does not give a statistically meaningful interval;
+moreover the two crossings pull $f_{\mathrm{best}}$ in \emph{opposite} directions
+relative to their anchors, whereas a coherent DI-shape mismodeling would shift them
+in the same fractional direction. This indicates that the $\chi^2$ surface is
+dominated by data--MC tensions unrelated to the DI fraction (truth-vertex-reweight
+closure, jet-fragmentation modeling, BDT calibration). Accordingly the central
+prediction is kept at the analytic anchors, and the fit is used only to size the
+envelope: a single variation per crossing angle is run at $f_{\mathrm{best}}$
+($0.290$ at $0$~mrad, $0.000$ at $1.5$~mrad), and the absolute per-bin cross-section
+deviation is taken as the symmetric two-sided systematic of item~5.8.
+
+\begin{table}[h]
+\centering
+\caption{$\chi^2/\mathrm{ndf}$ before $\to$ after DI blending, for two variables
+and two $\ETg$ ranges, per crossing-angle configuration.}
+\label{tab:dichi2}
+\begin{tabular}{llcc}
+\toprule
+Variable & $\ETg$ range & 0~mrad & 1.5~mrad \\
+\midrule
+$w_{\mathrm{CoG}\eta}$ & 10--14 & $47.40\to28.96$ & $9.72\to42.31$ \\
+$w_{\mathrm{CoG}\eta}$ & 22--28 & $15.58\to0.75$  & $21.10\to1.31$ \\
+BDT                    & 10--14 & $6.85\to20.30$  & $5.98\to33.08$ \\
+BDT                    & 22--28 & $9.62\to1.75$   & $1.89\to1.13$  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{DI blend-fraction scan: analysis value, best-fit value, before/after
+$\chi^2/\mathrm{ndf}$ and $\Delta\chi^2$.}
+\label{tab:discan}
+\begin{tabular}{lcc}
+\toprule
+Quantity & 0~mrad & 1.5~mrad \\
+\midrule
+$f_{\mathrm{anal}}$ & 0.224 & 0.079 \\
+$f_{\mathrm{best}}$ & 0.290 & 0.000 \\
+$\chi^2/\mathrm{ndf}$ (before) & 2.57 & 3.20 \\
+$\chi^2/\mathrm{ndf}$ (after)  & 2.84 & 3.67 \\
+$\Delta\chi^2$ & 68.4 & 116.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Cluster size under DI.} The EMCal cluster size (the owned-tower count
+$n_{\mathrm{owned}}$ and the bounding-box widths $\Delta i_\eta,\Delta i_\phi$) is
+the basic shape property underlying every shower-shape discriminant. The
+DI-induced shifts are mild for photons ($\Delta\langle n_{\mathrm{owned}}\rangle
+\sim0.2$ towers across the analysis range) but several times larger for jets,
+because soft neighboring towers from the second collision can be pushed above the
+$70$~MeV clustering threshold in a busy jet environment. After the tight photon-ID
+selection, data, jet MC, and photon MC all converge to a signal-like cluster size
+within $\pm5\%$, so the residual DI effect on the ABCD background template is most
+visible at the preselection stage and is reduced to below about $1\%$ after the
+tight cut.
+
+\paragraph{Energy response under DI.} The photon energy response
+$R=E_{\mathrm{T}}^{\mathrm{reco}}/p_{\mathrm{T}}^{\mathrm{truth}}$ is measured in
+bins of truth $\pt$ across the SI, DI, and mixed samples by fitting a
+double-sided Crystal-Ball function to extract the peak $\mu$ and resolution
+$\sigma$. At the common-cut level the DI events shift the peak by $\lesssim0.5\%$
+and broaden the resolution by $\lesssim10\%$ at $\pt\sim20$~GeV, with the mixed
+curves sitting between SI and DI at the appropriate fractions. This shift is well
+inside the energy-scale systematic budget and is further reduced by the
+truth-vertex reweight, so the leading DI sensitivity remains on the efficiency and
+the background template rather than on the energy scale.
+
+\paragraph{DI reco--truth kernel.} A structural feature limits any truth-only
+vertex correction for DI events. In \texttt{jet12\_double} MC at $1.5$~mrad the
+conditional reco kernel $P(z_r\,|\,z_h=0)$, with the minimum-bias vertex $z_{mb}$
+marginalized, has an RMS of $\sim34$~cm --- wider than the $\sim22$~cm data target.
+Because the reconstructed vertex of a DI event is the average of two
+independently drawn vertices, even forcing the primary truth vertex to $z_h=0$
+cannot narrow the reco distribution below this kernel width. This is the
+geometric reason a reweight on the primary truth vertex $z_h$ alone is
+insufficient for DI events, and it motivates the two-vertex
+$w(z_h)\,w(z_{mb})$ factorization adopted in the next appendix.
+
+\section{Truth-vertex reweighting}
+\label{app:tvr}
+The longitudinal extent of the luminous region differs between the two
+crossing-angle periods ($\sigma_{\mathrm{lum}}\approx54$~cm at $0$~mrad,
+$\approx22$~cm at $1.5$~mrad) and from the common generator beam profile
+($\sigma_{\mathrm{gen}}\approx65$~cm). Since the vertex-cut acceptance and the
+vertex-driven shower shapes both depend on the $z$ distribution, the MC
+truth-vertex distribution must be reweighted to match data. A naive reco-level
+weight $f(z_r)$ is insufficient for DI events: $f(z_r)$ depends only on the
+symmetric coordinate $\bar z=(z_h+z_{mb})/2$ and is flat in the antisymmetric
+coordinate $\varepsilon=(z_h-z_{mb})/2$, so the antisymmetric component is
+unconstrained by reco closure alone and the primary truth vertex retains a width
+$\sigma(z_h)=\sqrt{\tfrac12\sigma_{\mathrm{lum}}^2+\tfrac12\sigma_{\mathrm{MC}}^2}\simeq47$~cm
+at $1.5$~mrad. Left uncorrected, this biases the DI truth fiducial acceptance low
+by about $19$~pp, propagating to a $+1.4\%$ bias on the cross section at $1.5$~mrad
+(and $\sim0.3\%$ at $0$~mrad). The reweight is therefore factorized as $w(z_h)$ for
+SI events and $w(z_h)\,w(z_{mb})$ for DI events, giving the iteration access to the
+antisymmetric coordinate.
+
+\paragraph{Method.} The weight function $w(z)$ is derived directly from the data
+reco distribution with no closed-form Gaussian assumption. Under a candidate
+weight, the mixed-MC reco distribution is built event-by-event,
+\begin{equation}
+  M(z_r) = f_s\!\!\sum_{e\in T_s}\! w(z^e_h)\,\delta(z_r-z^e_r)
+         + f_d\!\!\sum_{e\in T_d}\! w(z^e_h)\,w(z^e_{mb})\,\delta(z_r-z^e_r),
+\end{equation}
+where $f_d$ is the cluster-weighted DI fraction and $f_s=1-f_d$; for DI events the
+weight enters once per truth vertex. Both periods use $80$ bins over
+$[-200,200]$~cm, with the closure window auto-derived as the $99$th percentile of
+$|z_r^{\mathrm{data}}|$ ($z_{\mathrm{cut}}=83$~cm at $1.5$~mrad, $144$~cm at
+$0$~mrad). The seed is
+$w_0(z)=\mathcal{N}(0,\sigma_{\mathrm{seed}}^2)/\mathcal{N}(0,\sigma_{\mathrm{gen}}^2)$
+with $\sigma_{\mathrm{gen}}=64.997\pm0.015$~cm from the MC truth vertex and
+$\sigma_{\mathrm{seed}}=\mathrm{std}(z_r^{\mathrm{data}})$ ($21.48$ / $54.32$~cm);
+$\sigma_{\mathrm{seed}}$ needs no physics input --- it is simply the empirical
+width of the distribution being matched. The update is Lucy--Richardson-like,
+multiplicative, and damped,
+\begin{align}
+  z_{\mathrm{reco}}^{\mathrm{model}} &= \mathcal{F}(z_{\mathrm{truth}}), \\
+  w_{i+1}(z) &= w_i(z) \cdot \big[\mathrm{smooth}(r_i(z))\big]^{\alpha},
+  \qquad \alpha=0.5,
+\end{align}
+with $r_i(z_r)=D(z_r)/M_i(z_r)$ the data/MC residual applied at the matching truth
+bin. After each step $w$ is renormalized so $\langle w(z_h)\rangle=1$ over the SI
+truth distribution (preserving the physics DI fraction); one-bin Gaussian
+smoothing suppresses oscillation, the update factor is clipped to $[0.5,2]$ per
+iteration, and boundary bins are edge-clamped. Convergence is declared at
+$\max|r_i(z)-1|<0.01$ inside the window, with a $30$-iteration cap. The converged
+parameters are listed in Table~\ref{tab:tvr}.
+
+\begin{table}[h]
+\centering
+\caption{Truth-vertex-reweighting parameters by crossing-angle configuration.}
+\label{tab:tvr}
+\begin{tabular}{lcc}
+\toprule
+Quantity & 0~mrad & 1.5~mrad \\
+\midrule
+Luminosity [pb$^{-1}$] & 47.2076 & 17.1642 \\
+$f_{\mathrm{double}}$ & 0.224 & 0.079 \\
+$\sigma_{\mathrm{seed}}$ [cm] & 54.32 & 21.48 \\
+$\sigma_{\mathrm{gen}}$ [cm] & \multicolumn{2}{c}{$64.997 \pm 0.015$} \\
+Final $\chi^2/\mathrm{ndf}$ & 2.78 (ndf 57) & 13.7 (ndf 33) \\
+$\max|r-1|$ & 0.008 & 0.111 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Per-period results.} Both periods are fit on the
+\texttt{photon10}/\texttt{photon10\_double} mix; the headline closure numbers are
+in Table~\ref{tab:tvr}. The two cases behave very differently. At $0$~mrad the
+luminous region ($\sigma_{\mathrm{lum}}\approx54$~cm) is already close to the
+generator profile and the data reco shape is nearly Gaussian, so the seed alone
+gives $\max|r-1|\approx8\%$ and the iteration converges cleanly in $8$ steps to
+$\max|r-1|\approx0.8\%$ and $\chi^2/\mathrm{ndf}\approx2.78$; the recovered $w(z)$
+is smooth and broadly Gaussian with a small central enhancement. At $1.5$~mrad the
+narrow luminous region must be extracted from a roughly three-times-wider source,
+so $w(0)\approx8$, and the data reco distribution is non-Gaussian (a narrow core
+plus a mid-tail shoulder near $|z_r|\approx45$--$60$~cm). The iteration makes
+dramatic progress in the first $\sim5$ steps (the in-window $\chi^2$ falls by a
+factor $\sim3100$) and then enters a slow plateau driven by bins at the
+closure-window edge $|z_r|\approx83$~cm, where the wide DI reco--truth kernel
+(previous appendix) makes the residual insensitive to $w(z)$. After $30$ iterations
+the bulk $|z_r|<30$~cm is closed to $1$--$2\%$ per bin while the edge residual
+stalls at $\max|r-1|\approx0.11$. Inside the analysis fiducial $|z|<60$~cm the
+per-bin closure is at the $1$--$2\%$ level for both periods.
+
+A single-Gaussian ansatz cannot capture the $1.5$~mrad shape: a parametric
+$\sigma_{\mathrm{tgt}}$ scan bottoms out at $\sigma_{\mathrm{tgt}}\approx15.7$~cm
+with a $\chi^2/\mathrm{ndf}$ two orders of magnitude worse than the iterative
+result, whereas at $0$~mrad the parametric and iterative solutions nearly coincide
+because the data is already Gaussian. The recovered $1.5$~mrad $w(z)$ has three
+distinguishing features that no symmetric Gaussian can represent: a strong central
+peak ($w(0)\approx8$) pulling near-IP doubles into the data-like core, a mid-$z$
+dip suppressing the generator's natural $|z|\sim30$--$50$~cm population, and a
+clear $\pm$ asymmetry in $|z|\approx40$--$60$~cm tracking the asymmetric data
+mid-tail. The reweight is fit on the photon mix; extending it to the full sample
+blend (including \texttt{jet12}) is expected to shift the closure metrics by about
+$1\%$. The residual cross-section impact, estimated from the maximum-deviation
+iteration, is $\mathcal{O}(1$--$2\%)$, concentrated at low $\ETg$ where the
+vertex-cut acceptance is most sensitive; it is carried as a cross-check and
+absorbed into the photon-ID response-driven systematic group rather than added in
+quadrature.
+
+\section{\textsc{herwig} cross-check}
+\label{app:herwig}
+The efficiency factors of Sec.~\ref{sec:analysis} are derived from
+\textsc{pythia-8} MC and therefore inherit any mismodeling of the event topology
+around the photon --- in particular the underlying-event and beam-remnant activity
+that sets the isolation and MBD-vertex efficiencies. To bound this generator
+dependence, the full $1.5$~mrad analysis pipeline is rerun with the nominal
+\textsc{pythia-8} Detroit signal MC replaced by \textsc{herwig}~7 photon-jet
+samples (\texttt{photon10\_herwig}, \texttt{photon20\_herwig}), keeping the data
+input and all background MC unchanged. \textsc{herwig} uses an angular-ordered
+parton shower and a cluster hadronization model, in contrast to \textsc{pythia}'s
+dipole shower and Lund string fragmentation, so the comparison probes a genuinely
+different modeling of the soft environment. The truth-$\pt$ prior is rederived in
+the same way as the nominal (an unweighted single-iteration unfolding of the data
+with the \textsc{herwig} response matrix, refit to a rational form), and the
+unfolded comparison uses a common reweight target so that any residual difference
+reflects the response matrix alone rather than the prior choice.
+
+The differences are concentrated in the isolation and MBD-vertex efficiencies:
+\textsc{herwig} photons sit in less-active mid-rapidity environments at fixed
+truth $\ETg$, raising the isolation efficiency by $3$--$6\%$ and the MBD-vertex
+efficiency by $4$--$7\%$. The photon-ID efficiency, which is governed by the
+calorimeter shower physics rather than the event topology, agrees to within
+$\pm1.5\%$ across the analysis range, and the unfolded yield (before efficiency
+division) collapses to within $\pm4\%$ once the common reweight target is used. The
+isolation-efficiency difference is propagated as the generator-driven systematic in
+the efficiency group (Sec.~\ref{sec:syst}, item~5.4.2, $\pm5.3\%$). The
+MBD-vertex difference is \emph{not} double-counted here, because the data-driven
+MBD-coincidence efficiency from the PPG-10 luminosity note already covers the
+generator-modeling uncertainty on the MBD-trigger response (item~5.5). The
+unfolded-yield comparison is retained as a closure cross-check only.
+
+\end{document}
