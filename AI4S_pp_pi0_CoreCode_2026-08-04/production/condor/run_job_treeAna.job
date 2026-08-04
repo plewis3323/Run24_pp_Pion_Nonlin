@@ -1,0 +1,24 @@
+Universe        = vanilla
+Notification    = Never
+concurrency_limits = CONCURRENCY_LIMIT_DEFAULT:1000
+	
+Executable      = /sphenix/tg/tg01/bulk/plewis3323/Run24_AuAu_New_2024_p007_DST_Calo/D_Calo_run2auau/Condor_process/run_sh_treeAna.sh
+Arguments       = $(infile)
+
+Initialdir      = /sphenix/tg/tg01/bulk/plewis3323/Run24_AuAu_New_2024_p007_DST_Calo/D_Calo_run2auau/Condor_process
+
+Output          = /sphenix/user/plewis3323/allCondorOutput/out/out_$(process).out
+Error           = /sphenix/user/plewis3323/allCondorOutput/err/err_$(process).err
+Log             = /sphenix/user/plewis3323/allCondorOutput/logs/log_$(process).log
+
+RequestMemory   = 80000MB
+PeriodicHold    = (NumJobStarts >= 1 && JobStatus == 1)
+
+
+# Explicitly instruct Condor to transfer files back from scratch directory:
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+Queue infile from output_batch3.list
+
+
